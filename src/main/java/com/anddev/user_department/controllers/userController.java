@@ -2,7 +2,9 @@ package com.anddev.user_department.controllers;
 
 import com.anddev.user_department.entities.User;
 import com.anddev.user_department.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,9 +29,24 @@ public class userController {
     }
 
     @PostMapping
-    public User insertUser(@RequestBody User user){
+    public void insertUser(@RequestBody User user){
         User newUser = repository.save(user);
-        return newUser;
     }
+
+    @PutMapping(value = "/{id}")
+    public void updateUser(@PathVariable Long id, @RequestBody User user){
+        User updatedUser = repository.findById(id).orElseThrow();
+        updatedUser.setName(user.getName());
+        updatedUser.setEmail(user.getEmail());
+        updatedUser.setDepartment(user.getDepartment());
+        repository.save(updatedUser);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public void deleteUser(@PathVariable Long id){
+        User deletedUser = repository.findById(id).orElseThrow();
+        repository.delete(deletedUser);
+    }
+
 
 }
